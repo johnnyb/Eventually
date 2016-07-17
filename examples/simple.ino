@@ -1,0 +1,43 @@
+#include <Eventually.h>
+
+/* 
+ * This just shows a simple way of using the library.
+ * Pushing a button moves the Arduino back-and-forth
+ * from a fast blink to a slow blink.
+ */
+
+#define LIGHT_PIN 5
+#define BUTTON_PIN 3
+
+bool speed = LOW;
+EvtManager mgr;
+bool pin_state = LOW;
+
+bool blink(EvtListener *l) {
+  pin_state = !pin_state;
+  digitalWrite(LIGHT_PIN, pin_state);
+  return false;
+}
+
+bool set_speed() {
+  mgr.resetContext();
+  EvtPinListener *btn = new EvtPinListener(BUTTON_PIN, 50, (EvtAction)set_speed);
+  btn->mustStartOpposite = true; // This prevents this from being auto-triggered in the next iteration because you haven't pulled up your finger
+  mgr.addListener(btn);
+  speed = !speed; // Change speeds
+  if(speed == HIGH) {
+    mgr.addListener(new EvtTimeListener(250, true, (EvtAction)blink));
+  } else {
+    mgr.addListener(new EvtTimeListener(1000, true, (EvtAction)blink));
+  }
+
+  return true;
+}
+
+void setup() {
+  pinMode(LIGHT_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT);
+  set_speed();
+}
+
+USE_EVENTUALLY_LOOP
