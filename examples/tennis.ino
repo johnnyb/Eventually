@@ -140,4 +140,4 @@ bool swingRacket() {
   }
 }
 
-USE_EVENTUALLY_LOOP
+USE_EVENTUALLY_LOOP(mgr)

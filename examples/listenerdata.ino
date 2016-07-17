@@ -36,4 +36,4 @@ void setup() {
   set_speed();
 }
 
-USE_EVENTUALLY_LOOP
+USE_EVENTUALLY_LOOP(mgr)

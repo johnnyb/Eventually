@@ -70,9 +70,9 @@ class EvtPinListener : public EvtListener {
   EvtPinListener(int pin, EvtAction trigger);
   EvtPinListener(int pin, int debounce, EvtAction action);
   int pin = 0;
-  int debounce = 0;  
+  int debounce = 40;  
   bool targetValue = HIGH;
-  bool mustStartOpposite = false;
+  bool mustStartOpposite = true;
   bool startState;
   unsigned long firstNoticed = 0;
 
@@ -94,4 +94,4 @@ class EvtTimeListener : public EvtListener {
   int numFires = 0;
 };
 
-#define USE_EVENTUALLY_LOOP void loop() { mgr.loopIteration(); }
+#define USE_EVENTUALLY_LOOP(mgr) void loop() { mgr.loopIteration(); }

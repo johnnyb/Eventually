@@ -21,9 +21,7 @@ bool blink(EvtListener *l) {
 
 bool set_speed() {
   mgr.resetContext();
-  EvtPinListener *btn = new EvtPinListener(BUTTON_PIN, 50, (EvtAction)set_speed);
-  btn->mustStartOpposite = true; // This prevents this from being auto-triggered in the next iteration because you haven't pulled up your finger
-  mgr.addListener(btn);
+  mgr.addListener(new EvtPinListener(BUTTON_PIN, 50, (EvtAction)set_speed));
   speed = !speed; // Change speeds
   if(speed == HIGH) {
     mgr.addListener(new EvtTimeListener(250, true, (EvtAction)blink));
@@ -40,4 +38,4 @@ void setup() {
   set_speed();
 }
 
-USE_EVENTUALLY_LOOP
+USE_EVENTUALLY_LOOP(mgr)

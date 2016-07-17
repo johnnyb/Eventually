@@ -21,4 +21,4 @@ bool blinkme() {
   return false; // Allow the event chain to continue
 }
 
-USE_EVENTUALLY_LOOP
+USE_EVENTUALLY_LOOP(mgr) // Use this instead of your loop() function.

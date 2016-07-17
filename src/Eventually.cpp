@@ -162,6 +162,7 @@ bool EvtPinListener::isEventTriggered() {
   
   if(mustStartOpposite && (startState == targetValue)) {
     /* This is a waiting loop to wait for the pin to change to the opposite state before sensing */
+    /* Q - do I need to debounce mustStartOpposite? */
     if(val == startState) {
       // Do nothing
     } else {
