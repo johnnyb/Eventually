@@ -10,8 +10,8 @@
 #include <limits.h>
 #include <Arduino.h>
 
-#define EVENTUALLY_MAX_CONTEXTS 10
-#define EVENTUALLY_MAX_LISTENERS 20
+#define EVENTUALLY_CONTEXT_BUFFER_SIZE 5
+#define EVENTUALLY_LISTENER_BUFFER_SIZE 5
 
 class EvtManager;
 class EvtContext;
@@ -33,7 +33,9 @@ class EvtManager {
   void removeListener(EvtListener *lstn);
 
   private:
-  EvtContext *contextStack = 0;
+  void setupCurrentContext();
+  EvtContext *contextStack[EVENTUALLY_CONTEXT_BUFFER_SIZE];
+  EvtManager *nextManager = 0; // This is just for holding more contexts
   int contextOffset = 0;
   int contextDepth = 0;
 };
@@ -50,7 +52,8 @@ class EvtContext {
   void removeListener(EvtListener *lstn);
 
   private:
-  EvtListener **listeners = 0;
+  EvtListener *listeners[EVENTUALLY_LISTENER_BUFFER_SIZE];
+  EvtContext *nextContext; // Just for holding more listeners
   int listenerCount;
 };
 

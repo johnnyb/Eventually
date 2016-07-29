@@ -8,40 +8,57 @@
 
 /* *** EVT MANAGER *** */
 EvtManager::EvtManager() {
-  contextStack = new EvtContext[EVENTUALLY_MAX_CONTEXTS];
-  contextStack[contextOffset].setupContext();
+  for(int i = 0; i < EVENTUALLY_MAX_CONTEXTS; i++) {
+    contextStack[i] = 0;
+  }
+  setupCurrentContext();
+}
+
+#define MANAGER_PROPAGATE(x) if(contextOffset >= EVENTUALLY_MAX_CONTEXTS) { if(nextManager == 0) { nextManager = new EvtManager(); } return x; }
+
+void EvtManager::setupCurrentContext() {
+	MANAGER_PROPAGATE(nextManager->setupCurrentContext())
+	contextStack[contextOffset] = new EvtContext();
+	contextStack[contextOffset].setupContext();
 }
 
 void EvtManager::addListener(EvtListener *lstn) {
-  contextStack[contextOffset].addListener(lstn);
+	MANAGER_PROPAGATE(nextManager->addListener(lstn))
+	contextStack[contextOffset].addListener(lstn);
 }
 
 void EvtManager::removeListener(EvtListener *lstn) {
-    contextStack[contextOffset].removeListener(lstn);
+	MANAGER_PROPAGATE(nextManager->removeListener(lstn))
+	contextStack[contextOffset].removeListener(lstn);
 }
 
 EvtContext *EvtManager::currentContext () {
-  return &contextStack[contextOffset];
+	MANAGER_PROPAGATE(nextManager->currentContext())
+	return &contextStack[contextOffset];
 }
 
 EvtContext *EvtManager::pushContext() {
-  contextOffset++;
-  contextStack[contextOffset].setupContext();
-  return &contextStack[contextOffset];
+	contextOffset++;
+	MANAGER_PROPAGATE(nextManager->pushContext())
+	contextStack[contextOffset].setupContext();
+	return &contextStack[contextOffset];
 }
 
 EvtContext *EvtManager::resetContext() {
-  contextStack[contextOffset].setupContext();
-  return &contextStack[contextOffset];
+	MANAGER_PROPAGATE(nextManager->resetContext())
+	contextStack[contextOffset].setupContext();
+	return &contextStack[contextOffset];
 }
 
 EvtContext *EvtManager::popContext() {
-  contextOffset--;
-  return &contextStack[contextOffset];
+	MANAGER_PROPAGATE(contextOffset--; nextManager->popContext());
+	contextOffset--;
+	return &contextStack[contextOffset];
 }
 
 void EvtManager::loopIteration() {
-  contextStack[contextOffset].loopIteration();
+	MANAGER_PROPAGATE(nextManager->loopIteration())
+	contextStack[contextOffset].loopIteration();
 }
 
 /* *** EVT CONTEXT *** */
