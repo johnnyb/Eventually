@@ -13,7 +13,7 @@ bool speed = LOW;
 EvtManager mgr;
 bool pin_state = LOW;
 
-bool blink(EvtListener *l) {
+bool blink() {
   pin_state = !pin_state;
   digitalWrite(LIGHT_PIN, pin_state);
   return false;

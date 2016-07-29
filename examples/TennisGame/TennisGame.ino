@@ -86,7 +86,7 @@ bool startNextPlayer() {
 }
 
 
-bool moveBall(EvtContext *ctx, EvtTimeListener *lstn) {
+bool moveBall() {
   if(currentPlayer == 1) {
     currentBallPosition--;
     if(currentBallPosition < 0) {
@@ -113,24 +113,8 @@ bool swingRacket() {
 }
 
 bool hitBall() {
-  if(currentPlayer == 1) {
-    if(currentBallPosition == 0) {
-      startNextPlayer();
-      return true;
-    }
-  } else {
-    if(currentBallPosition == lastBallPosition) {
-      startNextPlayer();
-      return true;
-    }
-  }
-
-  /* Swung at the wrong time! */
-  mgr.resetContext();
-  showAll();
-  currentPlayer = 1;
-  mgr.addListener(new EvtTimeListener(TURN_DELAY, false, (EvtAction)readyPlayer));
-  return true;
+  // If we hit, it moves to be the next player's ball
+  return startNextPlayer();
 }
 
 bool missedBall() {
@@ -141,6 +125,5 @@ bool missedBall() {
 
   return true;
 }
-
 
 USE_EVENTUALLY_LOOP(mgr)
