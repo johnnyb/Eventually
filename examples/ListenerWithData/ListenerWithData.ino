@@ -12,8 +12,8 @@ bool speed = LOW;
 EvtManager mgr;
 
 bool blink(EvtListener *l) {
-  l->data = !l->data;
-  digitalWrite(LIGHT_PIN, l->data);
+  l->extraData = (void *)(!(bool)l->extraData); // Extra casting to keep C++ happy
+  digitalWrite(LIGHT_PIN, (bool)l->extraData);
   return false;
 }
 
