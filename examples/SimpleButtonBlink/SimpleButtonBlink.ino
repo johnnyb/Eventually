@@ -21,7 +21,7 @@ bool blink() {
 
 bool set_speed() {
   mgr.resetContext();
-  mgr.addListener(new EvtPinListener(BUTTON_PIN, 50, (EvtAction)set_speed));
+  mgr.addListener(new EvtPinListener(BUTTON_PIN, (EvtAction)set_speed));
   speed = !speed; // Change speeds
   if(speed == HIGH) {
     mgr.addListener(new EvtTimeListener(250, true, (EvtAction)blink));
