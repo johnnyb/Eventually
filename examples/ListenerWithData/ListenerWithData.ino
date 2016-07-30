@@ -12,19 +12,29 @@ bool speed = LOW;
 EvtManager mgr;
 
 bool blink(EvtListener *l) {
-  l->extraData = (void *)(!(bool)l->extraData); // Extra casting to keep C++ happy
-  digitalWrite(LIGHT_PIN, (bool)l->extraData);
+  Serial.write("hello");
+  int data = (int)l->extraData;
+  Serial.write(data);
+  if(data == 0) {
+    data = 1;
+  } else {
+    data = 0;
+  }  
+  Serial.write(data);
+  Serial.write("done");
+  digitalWrite(LIGHT_PIN, data);
+  l->extraData = (void *)data;
   return false;
 }
 
 bool set_speed() {
   mgr.resetContext();
-  mgr.addListener(new EvtPinListener(BUTTON_PIN, 50, (EvtAction)set_speed));
+  mgr.addListener(new EvtPinListener(BUTTON_PIN, (EvtAction)set_speed));
   speed = !speed; // Change speeds
   if(speed == HIGH) {
-    mgr.addListener(new EvtTimeListener(LIGHT_PIN, 250, (EvtAction)blink));
+    mgr.addListener(new EvtTimeListener(250, true, (EvtAction)blink));
   } else {
-    mgr.addListener(new EvtTimeListener(LIGHT_PIN, 1000, (EvtAction)blink));
+    mgr.addListener(new EvtTimeListener(1000, true, (EvtAction)blink));
   }
 
   return true;
