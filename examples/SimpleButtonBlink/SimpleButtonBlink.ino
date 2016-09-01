@@ -13,7 +13,7 @@ bool speed = LOW;
 EvtManager mgr;
 bool pin_state = LOW;
 
-bool blink(EvtListener *l) {
+bool blink() {
   pin_state = !pin_state;
   digitalWrite(LIGHT_PIN, pin_state);
   return false;
@@ -21,7 +21,7 @@ bool blink(EvtListener *l) {
 
 bool set_speed() {
   mgr.resetContext();
-  mgr.addListener(new EvtPinListener(BUTTON_PIN, 50, (EvtAction)set_speed));
+  mgr.addListener(new EvtPinListener(BUTTON_PIN, (EvtAction)set_speed));
   speed = !speed; // Change speeds
   if(speed == HIGH) {
     mgr.addListener(new EvtTimeListener(250, true, (EvtAction)blink));
