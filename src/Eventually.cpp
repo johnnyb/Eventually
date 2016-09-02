@@ -8,66 +8,112 @@
 
 /* *** EVT MANAGER *** */
 EvtManager::EvtManager() {
-  for(int i = 0; i < EVENTUALLY_MAX_CONTEXTS; i++) {
-    contextStack[i] = 0;
+  for(int i = 0; i < EVENTUALLY_CONTEXT_BUFFER_SIZE; i++) {
+    contextStack[i] = NULL;
   }
   setupCurrentContext();
 }
 
-#define MANAGER_PROPAGATE(x) if(contextOffset >= EVENTUALLY_MAX_CONTEXTS) { if(nextManager == 0) { nextManager = new EvtManager(); } return x; }
 
 void EvtManager::setupCurrentContext() {
-	MANAGER_PROPAGATE(nextManager->setupCurrentContext())
-	contextStack[contextOffset] = new EvtContext();
-	contextStack[contextOffset].setupContext();
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		nextManager->setupCurrentContext();
+	} else {
+		if(contextStack[contextOffset] == NULL) {
+			contextStack[contextOffset] = new EvtContext();
+		}
+		contextStack[contextOffset]->setupContext();
+	}
 }
 
 void EvtManager::addListener(EvtListener *lstn) {
-	MANAGER_PROPAGATE(nextManager->addListener(lstn))
-	contextStack[contextOffset].addListener(lstn);
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		nextManager->addListener(lstn);
+	} else {
+		contextStack[contextOffset]->addListener(lstn);
+	}
 }
 
 void EvtManager::removeListener(EvtListener *lstn) {
-	MANAGER_PROPAGATE(nextManager->removeListener(lstn))
-	contextStack[contextOffset].removeListener(lstn);
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		nextManager->removeListener(lstn);
+	} else {
+		contextStack[contextOffset]->removeListener(lstn);
+	}
 }
 
 EvtContext *EvtManager::currentContext () {
-	MANAGER_PROPAGATE(nextManager->currentContext())
-	return &contextStack[contextOffset];
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		return nextManager->currentContext();
+	} else {
+		return contextStack[contextOffset];
+	}
 }
 
 EvtContext *EvtManager::pushContext() {
 	contextOffset++;
-	MANAGER_PROPAGATE(nextManager->pushContext())
-	contextStack[contextOffset].setupContext();
-	return &contextStack[contextOffset];
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		if(!nextManager) {
+			nextManager = new EvtManager();
+		}
+		return nextManager->pushContext();
+	} else {
+		if(contextStack[contextOffset] == NULL) {
+			contextStack[contextOffset] = new EvtContext();
+		}
+		contextStack[contextOffset]->setupContext();
+		return contextStack[contextOffset];
+	}
 }
 
 EvtContext *EvtManager::resetContext() {
-	MANAGER_PROPAGATE(nextManager->resetContext())
-	contextStack[contextOffset].setupContext();
-	return &contextStack[contextOffset];
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		return nextManager->resetContext();
+	} else {
+		if(contextStack[contextOffset] == NULL) {
+			contextStack[contextOffset] = new EvtContext();
+		}
+		contextStack[contextOffset]->setupContext();
+		return contextStack[contextOffset];
+	}
 }
 
 EvtContext *EvtManager::popContext() {
-	MANAGER_PROPAGATE(contextOffset--; nextManager->popContext());
 	contextOffset--;
-	return &contextStack[contextOffset];
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		return nextManager->popContext();
+	} else if(contextOffset == (EVENTUALLY_CONTEXT_BUFFER_SIZE - 1)) {
+		nextManager->popContext();
+		return contextStack[contextOffset];
+	} else if(contextOffset == -1) {
+		return NULL;
+	} else {
+		return contextStack[contextOffset];
+	}
 }
 
 void EvtManager::loopIteration() {
-	MANAGER_PROPAGATE(nextManager->loopIteration())
-	contextStack[contextOffset].loopIteration();
+	if(contextOffset >= EVENTUALLY_CONTEXT_BUFFER_SIZE) {
+		nextManager->loopIteration();
+	} else {
+		contextStack[contextOffset]->loopIteration();
+	}
 }
 
 /* *** EVT CONTEXT *** */
 
 EvtContext::EvtContext() {
+	for(int i = 0; i < EVENTUALLY_LISTENER_BUFFER_SIZE; i++) {
+		listeners[i] = NULL;
+	}
+}
+
+EvtContext::~EvtContext() {
+	setupContext();
 }
 
 void EvtContext::loopIteration() {
-  for(int i = 0; i < listenerCount; i++) {
+  for(int i = 0; i < EVENTUALLY_LISTENER_BUFFER_SIZE; i++) {
     if(listeners[i]) { // Make sure it isn't deleted  
       if(listeners[i]->isEventTriggered()) { // If we are triggered, run the action
         if(listeners[i]->performTriggerAction(this)) { // If the action returns true, stop the chain
@@ -76,45 +122,53 @@ void EvtContext::loopIteration() {
       }
     }
   }
+  if(nextContext) {
+    nextContext->loopIteration();
+  }
 }
 
 void EvtContext::setupContext() {
   if(data){
     delete data;
   }
+  if(nextContext) {
+    delete nextContext;
+    nextContext = NULL;
+  }
   if(listeners) {
-    for(int i = 0; i < listenerCount; i++) {
+    for(int i = 0; i < EVENTUALLY_LISTENER_BUFFER_SIZE; i++) {
       if(listeners[i]) {
         delete listeners[i];
+	listeners[i] = NULL;
       }
     }
-    delete listeners;
   }
-
-  listeners = new EvtListener *[EVENTUALLY_MAX_LISTENERS];
-  listenerCount = 0;
 }
   
 void EvtContext::addListener(EvtListener *lstn) {
-  for(int i = 0; i < listenerCount; i++) { // Try to add in empty slot
-    if(listeners[listenerCount] == 0) { 
-      listeners[listenerCount] = lstn;
+  for(int i = 0; i < EVENTUALLY_LISTENER_BUFFER_SIZE; i++) { // Try to add in empty slot
+    if(listeners[i] == NULL) { 
+      listeners[i] = lstn;
+      lstn->setupListener();
       return;
     }
   }
-
-  // No empty slot, just add it
-  listeners[listenerCount] = lstn;
-  lstn->setupListener();
-  listenerCount++;
+  if(!nextContext) {
+    nextContext = new EvtContext();
+  }
+  nextContext->addListener(lstn);
 }
 
 void EvtContext::removeListener(EvtListener *lstn) {
-  for(int i = 0; i < listenerCount; i++) {
+  for(int i = 0; i < EVENTUALLY_LISTENER_BUFFER_SIZE; i++) {
     if(listeners[i] == lstn) {
       delete lstn;
-      listeners[i] = 0;      
+      listeners[i] = NULL;
+      return;
     }
+  }
+  if(nextContext) {
+    nextContext->removeListener(lstn);
   }
 }
 

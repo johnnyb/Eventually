@@ -11,7 +11,7 @@
 #include <Arduino.h>
 
 #define EVENTUALLY_CONTEXT_BUFFER_SIZE 5
-#define EVENTUALLY_LISTENER_BUFFER_SIZE 5
+#define EVENTUALLY_LISTENER_BUFFER_SIZE 1
 
 class EvtManager;
 class EvtContext;
@@ -46,6 +46,7 @@ class EvtContext {
   void *data = 0;
 
   EvtContext();
+  ~EvtContext();
   void setupContext();
   void loopIteration();
   void addListener(EvtListener *lstn);
