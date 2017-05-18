@@ -11,11 +11,11 @@
  * it where the start and end points are.
  */
 
-#define PLAYER_BUTTON_1 2
-#define PLAYER_BUTTON_2 3
+#define PLAYER_BUTTON_1 3
+#define PLAYER_BUTTON_2 2
 
-#define BALL_PIN_START 4
-#define BALL_PIN_END 8
+#define BALL_PIN_START 5
+#define BALL_PIN_END 9
 
 #define BALL_SPEED 1000
 #define TURN_DELAY 1000
