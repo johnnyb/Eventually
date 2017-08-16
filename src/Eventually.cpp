@@ -121,6 +121,13 @@ EvtPinListener::EvtPinListener() {
   
 }
 
+EvtPinListener::EvtPinListener(int pin, int debounce, bool targetValue, EvtAction action) {
+  this->pin = pin;
+  this->debounce = debounce;
+  this->targetValue = targetValue;
+  this->triggerAction = action;
+}
+
 EvtPinListener::EvtPinListener(int pin, int debounce, EvtAction action) {
   this->pin = pin;
   this->debounce = debounce;
