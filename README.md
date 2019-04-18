@@ -39,6 +39,21 @@ Now, during our setup() function, instead of just doing pinModes, you also need 
       mgr.addListener(new EvtPinListener(BUTTON_PIN, (EvtAction)start_blinking));
     }
 
+Alternatively, if our BUTTON_PIN uses INPUT_PULLUP:
+
+  void setup() {
+
+    // ...
+
+    /* Button is LOW when pushed, so use INPUT_PULLUP */
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+    /* Add a button listener, listening for LOW */
+    /* (To use this constructor, we also have to specify the debounce delay) */
+    mgr.addListener(new EvtPinListener(BUTTON_PIN, 40, LOW, (EvtAction)start_blinking));
+
+  }
+
 This creates a listener for the given button pin, and will call start_blinking when the button is pushed.  Note that by default, EvtPinListeners will automatically debounce the pin, and also make sure that it starts in the opposite state before beginning listening (though both of these are configurable).
 
 Also note that we put (EvtAction) in front of our function name.  This makes sure the compiler knows that this will be used as an event action.  It may not compile without this marking.
