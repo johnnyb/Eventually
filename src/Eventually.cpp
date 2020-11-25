@@ -233,6 +233,10 @@ bool EvtTimeListener::performTriggerAction(EvtContext *c) {
     // On multifire, we shouldn't stop the event chain no matter what, since we are just restarting in this context
     return false;
   } else {
+	  // remove this listener from the chain
+	  // else it will keep triggering each loop
+	  c->removeListener(this);
+
     return returnval;
   }
 }
