@@ -7,53 +7,67 @@
 #include <Eventually.h>
 
 /* *** EVT MANAGER *** */
-EvtManager::EvtManager() {
+EvtManager::EvtManager()
+{
   contextStack = new EvtContext[EVENTUALLY_MAX_CONTEXTS];
   contextStack[contextOffset].setupContext();
 }
 
-void EvtManager::addListener(EvtListener *lstn) {
+void EvtManager::addListener(EvtListener *lstn)
+{
   contextStack[contextOffset].addListener(lstn);
 }
 
-void EvtManager::removeListener(EvtListener *lstn) {
-    contextStack[contextOffset].removeListener(lstn);
+void EvtManager::removeListener(EvtListener *lstn)
+{
+  contextStack[contextOffset].removeListener(lstn);
 }
 
-EvtContext *EvtManager::currentContext () {
+EvtContext *EvtManager::currentContext()
+{
   return &contextStack[contextOffset];
 }
 
-EvtContext *EvtManager::pushContext() {
+EvtContext *EvtManager::pushContext()
+{
   contextOffset++;
   contextStack[contextOffset].setupContext();
   return &contextStack[contextOffset];
 }
 
-EvtContext *EvtManager::resetContext() {
+EvtContext *EvtManager::resetContext()
+{
   contextStack[contextOffset].setupContext();
   return &contextStack[contextOffset];
 }
 
-EvtContext *EvtManager::popContext() {
+EvtContext *EvtManager::popContext()
+{
   contextOffset--;
   return &contextStack[contextOffset];
 }
 
-void EvtManager::loopIteration() {
+void EvtManager::loopIteration()
+{
   contextStack[contextOffset].loopIteration();
 }
 
 /* *** EVT CONTEXT *** */
 
-EvtContext::EvtContext() {
+EvtContext::EvtContext()
+{
 }
 
-void EvtContext::loopIteration() {
-  for(int i = 0; i < listenerCount; i++) {
-    if(listeners[i]) { // Make sure it isn't deleted  
-      if(listeners[i]->isEventTriggered()) { // If we are triggered, run the action
-        if(listeners[i]->performTriggerAction(this)) { // If the action returns true, stop the chain
+void EvtContext::loopIteration()
+{
+  for (int i = 0; i < listenerCount; i++)
+  {
+    if (listeners[i])
+    { // Make sure it isn't deleted
+      if (listeners[i]->isEventTriggered())
+      { // If we are triggered, run the action
+        if (listeners[i]->performTriggerAction(this))
+        { // If the action returns true, stop the chain
           return;
         }
       }
@@ -61,13 +75,18 @@ void EvtContext::loopIteration() {
   }
 }
 
-void EvtContext::setupContext() {
-  if(data){
+void EvtContext::setupContext()
+{
+  if (data)
+  {
     delete data;
   }
-  if(listeners) {
-    for(int i = 0; i < listenerCount; i++) {
-      if(listeners[i]) {
+  if (listeners)
+  {
+    for (int i = 0; i < listenerCount; i++)
+    {
+      if (listeners[i])
+      {
         delete listeners[i];
       }
     }
@@ -77,10 +96,13 @@ void EvtContext::setupContext() {
   listeners = new EvtListener *[EVENTUALLY_MAX_LISTENERS];
   listenerCount = 0;
 }
-  
-void EvtContext::addListener(EvtListener *lstn) {
-  for(int i = 0; i < listenerCount; i++) { // Try to add in empty slot
-    if(listeners[listenerCount] == 0) { 
+
+void EvtContext::addListener(EvtListener *lstn)
+{
+  for (int i = 0; i < listenerCount; i++)
+  { // Try to add in empty slot
+    if (listeners[listenerCount] == 0)
+    {
       listeners[listenerCount] = lstn;
       return;
     }
@@ -92,147 +114,198 @@ void EvtContext::addListener(EvtListener *lstn) {
   listenerCount++;
 }
 
-void EvtContext::removeListener(EvtListener *lstn) {
-  for(int i = 0; i < listenerCount; i++) {
-    if(listeners[i] == lstn) {
+void EvtContext::removeListener(EvtListener *lstn)
+{
+  for (int i = 0; i < listenerCount; i++)
+  {
+    if (listeners[i] == lstn)
+    {
       delete lstn;
-      listeners[i] = 0;      
+      listeners[i] = 0;
     }
   }
 }
 
 /* *** EVT LISTENER *** */
 
-void EvtListener::setupListener() {
-  
+void EvtListener::setupListener()
+{
 }
 
-bool EvtListener::isEventTriggered() {
-  return false;
+bool EvtListener::isEventTriggered()
+{
+  return enabled;
 }
 
-bool EvtListener::performTriggerAction(EvtContext *ctx) {
+bool EvtListener::performTriggerAction(EvtContext *ctx)
+{
   return (*triggerAction)(this, ctx);
 }
 
 /* *** EVT PIN LISTENER *** */
 
-EvtPinListener::EvtPinListener() {
-  
+EvtPinListener::EvtPinListener()
+{
 }
 
-EvtPinListener::EvtPinListener(int pin, int debounce, bool targetValue, EvtAction action) {
+EvtPinListener::EvtPinListener(int pin, int debounce, bool targetValue, EvtAction action)
+{
   this->pin = pin;
   this->debounce = debounce;
   this->targetValue = targetValue;
   this->triggerAction = action;
 }
 
-EvtPinListener::EvtPinListener(int pin, int debounce, EvtAction action) {
+EvtPinListener::EvtPinListener(int pin, int debounce, EvtAction action)
+{
   this->pin = pin;
   this->debounce = debounce;
   this->triggerAction = action;
 }
 
-EvtPinListener::EvtPinListener(int pin, EvtAction action) {
+EvtPinListener::EvtPinListener(int pin, EvtAction action)
+{
   this->pin = pin;
   this->triggerAction = action;
 }
 
-void EvtPinListener::setupListener() {
+void EvtPinListener::setupListener()
+{
   startState = digitalRead(pin);
 }
 
-bool EvtPinListener::isEventTriggered() {
-  bool val = digitalRead(pin); 
+bool EvtPinListener::isEventTriggered()
+{
+  if (!EvtListener::isEventTriggered())
+  {
+    return false;
+  }
+
+  bool val = digitalRead(pin);
 
   // Debounce check if we were triggered earlier
-  if(firstNoticed) {
+  if (firstNoticed)
+  {
     unsigned long curMillis = millis();
-    if(curMillis > firstNoticed + debounce) {
+    if (curMillis > firstNoticed + debounce)
+    {
       // Debounce time expired, check again
 
       // Reset Watcher
       firstNoticed = 0;
 
       // Check
-      if(val == targetValue) {
+      if (val == targetValue)
+      {
         return true;
-      } else {
+      }
+      else
+      {
         return false;
       }
-    } else {
+    }
+    else
+    {
       // Waiting for debouncer to finish
       return false;
     }
   }
-  
-  if(mustStartOpposite && (startState == targetValue)) {
+
+  if (mustStartOpposite && (startState == targetValue))
+  {
     /* This is a waiting loop to wait for the pin to change to the opposite state before sensing */
     /* Q - do I need to debounce mustStartOpposite? */
-    if(val == startState) {
+    if (val == startState)
+    {
       // Do nothing
-    } else {
+    }
+    else
+    {
       startState = val;
     }
 
     return false;
-  } else {
+  }
+  else
+  {
     /* This is the real deal */
-    if(val == targetValue) {
-      if(debounce == 0) {
+    if (val == targetValue)
+    {
+      if (debounce == 0)
+      {
         return true;
-      } else {
+      }
+      else
+      {
         firstNoticed = millis();
         return false;
       }
-    } else {
+    }
+    else
+    {
       return false;
     }
   }
 }
 
 /* *** EVT TIME LISTENER *** */
-EvtTimeListener::EvtTimeListener() {
-  
+EvtTimeListener::EvtTimeListener()
+{
 }
 
-EvtTimeListener::EvtTimeListener(unsigned long time, bool multiFire, EvtAction t) {
+EvtTimeListener::EvtTimeListener(unsigned long time, bool multiFire, EvtAction t)
+{
   this->millis = time;
   this->triggerAction = t;
   this->multiFire = multiFire;
 }
 
-void EvtTimeListener::setupListener() {
+void EvtTimeListener::setupListener()
+{
   startMillis = ::millis();
 }
 
-bool EvtTimeListener::isEventTriggered() {
+bool EvtTimeListener::isEventTriggered()
+{
+  if (!EvtListener::isEventTriggered())
+  {
+    return false;
+  }
+
   unsigned long curTime = ::millis();
   bool shouldFire = false;
-  if(curTime >= startMillis) {
+  if (curTime >= startMillis)
+  {
     /* Normal */
-    if(curTime - startMillis > this->millis) {
+    if (curTime - startMillis > this->millis)
+    {
       shouldFire = true;
     }
-  } else {
+  }
+  else
+  {
     /* Wrap-Around! */
-    if(((ULONG_MAX - startMillis) + curTime) > this->millis) {
+    if (((ULONG_MAX - startMillis) + curTime) > this->millis)
+    {
       shouldFire = true;
     }
   }
 
-  return shouldFire;  
+  return shouldFire;
 }
 
-bool EvtTimeListener::performTriggerAction(EvtContext *c) {
+bool EvtTimeListener::performTriggerAction(EvtContext *c)
+{
   bool returnval = (*triggerAction)(this, c);
-  if(multiFire) {
+  if (multiFire)
+  {
     // On multifire, setup to receive the event again
     setupListener();
     // On multifire, we shouldn't stop the event chain no matter what, since we are just restarting in this context
     return false;
-  } else {
+  }
+  else
+  {
     return returnval;
   }
 }
