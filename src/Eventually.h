@@ -66,6 +66,9 @@ public:
   virtual bool isEventTriggered();
   virtual bool performTriggerAction(EvtContext *); // return false if I should stop the current chain
 
+  virtual void disable();
+  virtual void enable();
+  
 protected:
 };
 
