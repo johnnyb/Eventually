@@ -1,5 +1,8 @@
 Eventually
 ==========
+
+[![PlatformIO CI](https://github.com/matthewturner/Eventually/actions/workflows/platformio.yml/badge.svg)](https://github.com/matthewturner/Eventually/actions/workflows/platformio.yml)
+
 An Arduino Event-based Programming Library
 ------------------------------------------
 

@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "PlatformIO",
+			"task": "Pre-Debug",
+			"problemMatcher": [
+				"$platformio"
+			],
+			"label": "PlatformIO: Build (debug)"
+		}
+	]
+}
