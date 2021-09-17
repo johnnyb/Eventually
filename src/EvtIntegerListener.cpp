@@ -1,6 +1,6 @@
 #include "EvtIntegerListener.h"
 
-EvtIntegerListener::EvtIntegerListener(int *variable, int targetValue, EvtAction action)
+EvtIntegerListener::EvtIntegerListener(volatile int *variable, int targetValue, EvtAction action)
 {
     _variable = variable;
     _targetValue = targetValue;

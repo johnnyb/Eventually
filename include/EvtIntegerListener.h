@@ -6,12 +6,12 @@
 class EvtIntegerListener : public EvtListener
 {
 public:
-    EvtIntegerListener(int *variable, int targetValue, EvtAction action);
+    EvtIntegerListener(volatile int *variable, int targetValue, EvtAction action);
     void setupListener();
     bool isEventTriggered();
 
 private:
-    int *_variable;
+    volatile int *_variable;
     int _targetValue;
     int _lastValue;
 };
