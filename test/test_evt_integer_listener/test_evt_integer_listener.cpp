@@ -1,4 +1,5 @@
 #include <unity.h>
+#include <Arduino.h>
 
 #include "EvtIntegerListener.h"
 

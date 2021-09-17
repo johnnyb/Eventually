@@ -2,6 +2,7 @@
 #define EvtTimeListener_h
 
 #include <Arduino.h>
+#include <limits.h>
 
 #include "EvtListener.h"
 #include "EvtContext.h"

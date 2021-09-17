@@ -13,6 +13,7 @@
 #include "EvtContext.h"
 #include "EvtListener.h"
 #include "EvtPinListener.h"
+#include "EvtTimeListener.h"
 #include "EvtIntegerListener.h"
 #include "EvtManager.h"
 

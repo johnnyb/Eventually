@@ -2,6 +2,7 @@
 #define EvtPinListener_h
 
 #include <Arduino.h>
+#include "EvtListener.h"
 
 class EvtPinListener : public EvtListener
 {
