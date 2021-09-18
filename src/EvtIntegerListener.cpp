@@ -1,11 +1,17 @@
 #include "EvtIntegerListener.h"
 
-EvtIntegerListener::EvtIntegerListener(volatile int *variable, int targetValue, EvtAction action)
+EvtIntegerListener::EvtIntegerListener(volatile int *variable, int targetValue, char triggerMode, EvtAction action)
 {
     _variable = variable;
     _targetValue = targetValue;
     _lastValue = targetValue + 1;
     triggerAction = action;
+    triggerMode = triggerMode;
+}
+
+EvtIntegerListener::EvtIntegerListener(volatile int *variable, int targetValue, EvtAction action)
+    :  EvtIntegerListener(variable, targetValue, ON_CHANGE, triggerAction)
+{
 }
 
 void EvtIntegerListener::setupListener()
@@ -28,7 +34,7 @@ bool EvtIntegerListener::isEventTriggered()
         return false;
     }
 
-    if (*_variable == lastValue)
+    if (triggerMode == ON_CHANGE && *_variable == lastValue)
     {
         return false;
     }

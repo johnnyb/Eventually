@@ -48,6 +48,7 @@ void test_does_not_trigger_third_time(void)
 {
     TEST_ASSERT_TRUE(target.isEventTriggered());
     TEST_ASSERT_FALSE(target.isEventTriggered());
+    TEST_ASSERT_FALSE(target.isEventTriggered());
 }
 
 void test_retriggers_after_change(void)
@@ -56,6 +57,13 @@ void test_retriggers_after_change(void)
     value = 15;
     TEST_ASSERT_FALSE(target.isEventTriggered());
     value = 10;
+    TEST_ASSERT_TRUE(target.isEventTriggered());
+}
+
+void test_retriggers_always(void)
+{
+    target.triggerMode = ALWAYS;
+    TEST_ASSERT_TRUE(target.isEventTriggered());
     TEST_ASSERT_TRUE(target.isEventTriggered());
 }
 
@@ -68,6 +76,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_does_not_trigger_second_time);
     RUN_TEST(test_does_not_trigger_third_time);
     RUN_TEST(test_retriggers_after_change);
+    RUN_TEST(test_retriggers_always);
     UNITY_END();
 
     return 0;
