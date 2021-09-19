@@ -1,7 +1,7 @@
 #include <unity.h>
 #include <Arduino.h>
 
-#include "EvtIntegerListener.h"
+#include "EvtByteListener.h"
 
 bool triggered = false;
 
@@ -11,8 +11,8 @@ bool trigger()
     return true;
 }
 
-int value = 10;
-EvtIntegerListener target(&value, 10, (EvtAction)trigger);
+byte value = 10;
+EvtByteListener target(&value, 10, (EvtAction)trigger);
 
 void setUp(void)
 {
