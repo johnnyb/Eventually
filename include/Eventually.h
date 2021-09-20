@@ -14,7 +14,7 @@
 #include "EvtListener.h"
 #include "EvtPinListener.h"
 #include "EvtTimeListener.h"
-#include "EvtIntegerListener.h"
+#include "EvtByteListener.h"
 #include "EvtManager.h"
 
 #define USE_EVENTUALLY_LOOP(mgr) \
