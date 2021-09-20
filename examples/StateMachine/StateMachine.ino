@@ -6,13 +6,20 @@ const byte IDLE = 0;
 const byte PENDING = 1;
 const byte IN_PROGRESS = 2;
 
-byte state = IDLE;
-byte *pState = &state;
+volatile byte state = IDLE;
+volatile byte *pState = &state;
+
+void wakeUp()
+{
+    if (state == IDLE)
+    {
+        state = PENDING;
+    }
+}
 
 bool idle()
 {
     Serial.println("Idling...");
-    *pState = PENDING;
     digitalWrite(13, LOW);
     delay(500);
     return true;
@@ -21,14 +28,14 @@ bool idle()
 bool pending()
 {
     Serial.println("Pending...");
-    *pState = IN_PROGRESS;
+    state = IN_PROGRESS;
     return true;
 }
 
 bool inProgress()
 {
     Serial.println("In progress...");
-    *pState = IDLE;
+    state = IDLE;
     digitalWrite(13, HIGH);
     delay(500);
     return true;
@@ -43,17 +50,16 @@ void setup()
         ;
 
     pinMode(13, OUTPUT);
-    *pState = IDLE;
+    state = IDLE;
 
-    mgr.addListener(new EvtByteListener(pState, IDLE, ALWAYS, (EvtAction)idle));
-    mgr.addListener(new EvtByteListener(pState, PENDING, ALWAYS, (EvtAction)pending));
-    mgr.addListener(new EvtByteListener(pState, IN_PROGRESS, ALWAYS, (EvtAction)inProgress));
+    mgr.addListener(new EvtByteListener(pState, IDLE, (EvtAction)idle));
+    mgr.addListener(new EvtByteListener(pState, PENDING, (EvtAction)pending));
+    mgr.addListener(new EvtByteListener(pState, IN_PROGRESS, (EvtAction)inProgress));
+
+    pinMode(2, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(2), wakeUp, LOW);
 
     Serial.println("Setup complete, continuing...");
 }
 
-void loop()
-{
-    Serial.print(".");
-    mgr.loopIteration();
-}
+USE_EVENTUALLY_LOOP(mgr)

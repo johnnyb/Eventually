@@ -11,9 +11,9 @@ bool trigger()
     return true;
 }
 
-byte value = 10;
-byte *pValue = &value;
-EvtByteListener target(pValue, (byte)10, ALWAYS, (EvtAction)trigger);
+volatile byte value = 10;
+volatile byte *pValue = &value;
+EvtByteListener target(pValue, (byte)10, (EvtAction)trigger);
 
 void setUp(void)
 {
@@ -39,19 +39,6 @@ void test_triggers_when_target_value(void)
     TEST_ASSERT_TRUE(target.isEventTriggered());
 }
 
-void test_does_not_trigger_second_time(void)
-{
-    TEST_ASSERT_TRUE(target.isEventTriggered());
-    TEST_ASSERT_FALSE(target.isEventTriggered());
-}
-
-void test_does_not_trigger_third_time(void)
-{
-    TEST_ASSERT_TRUE(target.isEventTriggered());
-    TEST_ASSERT_FALSE(target.isEventTriggered());
-    TEST_ASSERT_FALSE(target.isEventTriggered());
-}
-
 void test_retriggers_after_change(void)
 {
     TEST_ASSERT_TRUE(target.isEventTriggered());
@@ -63,9 +50,8 @@ void test_retriggers_after_change(void)
 
 void test_retriggers_always(void)
 {
-    // target.triggerMode = ALWAYS;
-    // TEST_ASSERT_TRUE(target.isEventTriggered());
-    // TEST_ASSERT_TRUE(target.isEventTriggered());
+    TEST_ASSERT_TRUE(target.isEventTriggered());
+    TEST_ASSERT_TRUE(target.isEventTriggered());
 }
 
 int main(int argc, char **argv)
@@ -74,8 +60,6 @@ int main(int argc, char **argv)
     RUN_TEST(test_does_not_trigger_when_disabled);
     RUN_TEST(test_does_not_trigger_when_not_target_value);
     RUN_TEST(test_triggers_when_target_value);
-    RUN_TEST(test_does_not_trigger_second_time);
-    RUN_TEST(test_does_not_trigger_third_time);
     RUN_TEST(test_retriggers_after_change);
     RUN_TEST(test_retriggers_always);
     UNITY_END();

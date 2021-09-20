@@ -10,14 +10,13 @@ const byte ON_CHANGE = 1;
 class EvtByteListener : public EvtListener
 {
 public:
-    // EvtByteListener(byte *variable, byte targetValue, EvtAction action);
-    EvtByteListener(byte *variable, byte targetValue, byte triggerMode, EvtAction action);
+    EvtByteListener(volatile byte *variable, byte targetValue, EvtAction action);
     void setupListener();
     bool isEventTriggered();
     byte triggerMode = ON_CHANGE;
 
 private:
-    byte *_variable;
+    volatile byte *_variable;
     byte _targetValue;
     byte _lastValue;
 };
