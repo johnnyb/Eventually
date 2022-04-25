@@ -1,5 +1,5 @@
-#ifndef EvtByteListener_h
-#define EvtByteListener_h
+#ifndef StateMachineListener_h
+#define StateMachineListener_h
 
 #include <Arduino.h>
 #include "EvtListener.h"
