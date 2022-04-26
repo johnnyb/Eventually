@@ -4,8 +4,8 @@ StateMachineListener::StateMachineListener()
 {
 }
 
-void StateMachineListener::addState(byte targetState, EvtAction action,
-                                    byte successState, byte failureState)
+void StateMachineListener::when(byte targetState, EvtAction action,
+                                byte successState, byte failureState)
 {
     StateAction s;
     s.action = action;
@@ -22,13 +22,40 @@ bool StateMachineListener::performTriggerAction(EvtContext *ctx)
     bool result = (*s.action)(this, ctx);
     if (result)
     {
-        _state = s.successState;
+        if (s.successState != NO_TRANSITION)
+        {
+            _state = s.successState;
+        }
     }
     else
     {
         _state = s.failureState;
     }
     return true;
+}
+
+void StateMachineListener::onInterrupt()
+{
+    if (currentState() == _interruptHandler.guardState)
+    {
+        setState(_interruptHandler.targetState);
+    }
+}
+
+void StateMachineListener::whenInterrupted(byte guardState, byte targetState)
+{
+    _interruptHandler.guardState = guardState;
+    _interruptHandler.targetState = targetState;
+}
+
+bool StateMachineListener::isEventTriggered()
+{
+    if (!EvtListener::isEventTriggered())
+    {
+        return false;
+    }
+
+    return _state != STATE_FAILED;
 }
 
 void StateMachineListener::setState(byte state)
