@@ -1,8 +1,10 @@
+#include <ArduinoFake.h>
 #include <unity.h>
-#include <Arduino.h>
 
 #include "EvtContext.h"
 #include "StateMachineListener.h"
+
+using namespace fakeit;
 
 bool triggered = false;
 
@@ -25,6 +27,8 @@ void setUp(void)
     triggered = false;
     target.enable();
     target.setState(3);
+    target.setTransitionTime(0);
+    When(Method(ArduinoFake(), millis)).Return(10);
 }
 
 void test_does_not_trigger_when_disabled(void)
@@ -93,6 +97,21 @@ void test_interrupt_transitions_when_guard_state(void)
     TEST_ASSERT_EQUAL(6, target.currentState());
 }
 
+void test_does_not_transition_before_timeout(void)
+{
+    target.when(3, (EvtAction)trigger, 4, 5, 10);
+    target.performTriggerAction(&ctx);
+    TEST_ASSERT_EQUAL(3, target.currentState());
+}
+
+void test_transitions_after_timeout(void)
+{
+    target.setTransitionTime(5);
+    target.when(3, (EvtAction)trigger, 4, 5, 3);
+    target.performTriggerAction(&ctx);
+    TEST_ASSERT_EQUAL(4, target.currentState());
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -106,6 +125,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_sets_next_failed_state);
     RUN_TEST(test_interrupt_does_not_transition_when_not_guard_state);
     RUN_TEST(test_interrupt_transitions_when_guard_state);
+    RUN_TEST(test_does_not_transition_before_timeout);
+    RUN_TEST(test_transitions_after_timeout);
     UNITY_END();
 
     return 0;

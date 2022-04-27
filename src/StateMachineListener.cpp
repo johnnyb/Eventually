@@ -5,20 +5,32 @@ StateMachineListener::StateMachineListener()
 }
 
 void StateMachineListener::when(byte targetState, EvtAction action,
-                                byte successState, byte failureState)
+                                byte successState, byte failureState,
+                                uint32_t timeout, bool repeatAction)
 {
     StateAction s;
     s.action = action;
     s.state = targetState;
     s.successState = successState;
     s.failureState = failureState;
+    s.timeout = timeout;
+    s.repeatAction = repeatAction;
 
     _stateActions[targetState] = s;
 }
 
 bool StateMachineListener::performTriggerAction(EvtContext *ctx)
 {
-    StateAction s = _stateActions[_state];
+    byte currentState = _state;
+    uint64_t currentTime = millis();
+
+    StateAction s = _stateActions[currentState];
+
+    if (currentTime - _transitionTime <= s.timeout)
+    {
+        return true;
+    }
+
     bool result = (*s.action)(this, ctx);
     if (result)
     {
@@ -31,7 +43,18 @@ bool StateMachineListener::performTriggerAction(EvtContext *ctx)
     {
         _state = s.failureState;
     }
+
+    if (_state != currentState)
+    {
+        setTransitionTime(currentTime);
+    }
+
     return true;
+}
+
+void StateMachineListener::setTransitionTime(uint64_t timeInMs)
+{
+    _transitionTime = timeInMs;
 }
 
 void StateMachineListener::onInterrupt()
