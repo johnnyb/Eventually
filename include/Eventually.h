@@ -16,6 +16,7 @@
 #include "EvtTimeListener.h"
 #include "EvtByteListener.h"
 #include "EvtManager.h"
+#include "StateMachineListener.h"
 
 #define USE_EVENTUALLY_LOOP(mgr) \
   void loop() { mgr.loopIteration(); }
