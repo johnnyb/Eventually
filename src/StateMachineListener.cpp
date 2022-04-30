@@ -50,10 +50,17 @@ bool StateMachineListener::performTriggerAction(EvtContext *ctx)
         if (s.transitionDelay == 0)
         {
             _actionExecuted = false;
-            if (s.successState != NO_TRANSITION)
+            if (s.successState == NO_TRANSITION)
             {
-                transition(s.successState);
+                return true;
             }
+            if (_state != s.state)
+            {
+                // state was externally set so don't
+                // auto-transition
+                return true;
+            }
+            transition(s.successState);
             return true;
         }
         // keep in this state and repeat
