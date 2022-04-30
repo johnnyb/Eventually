@@ -62,6 +62,19 @@ void test_does_not_transition(void)
     TEST_ASSERT_EQUAL(3, target.currentState());
 }
 
+bool triggerWithTransition()
+{
+    target.transition(4);
+    return true;
+}
+
+void test_does_not_transition_when_state_externally_transitioned(void)
+{
+    target.when(3, (EvtAction)triggerWithTransition, 5);
+    target.performTriggerAction(&ctx);
+    TEST_ASSERT_EQUAL(4, target.currentState());
+}
+
 void test_triggers_when_state(void)
 {
     target.when(3, (EvtAction)trigger, 4);
@@ -249,6 +262,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_triggers_when_enabled);
     RUN_TEST(test_does_not_trigger_when_failed);
     RUN_TEST(test_does_not_transition);
+    RUN_TEST(test_does_not_transition_when_state_externally_transitioned);
     RUN_TEST(test_triggers_when_state);
     RUN_TEST(test_sets_next_state);
     RUN_TEST(test_sets_default_failed_state);
