@@ -14,11 +14,17 @@ EvtTimeListener::EvtTimeListener(unsigned long time, bool multiFire, EvtAction t
 void EvtTimeListener::setupListener()
 {
     startMillis = ::millis();
+    hasExecuted = false;
 }
 
 bool EvtTimeListener::isEventTriggered()
 {
     if (!EvtListener::isEventTriggered())
+    {
+        return false;
+    }
+
+    if (!multiFire && hasExecuted)
     {
         return false;
     }
@@ -57,6 +63,7 @@ bool EvtTimeListener::performTriggerAction(EvtContext *c)
     }
     else
     {
+        hasExecuted = true;
         return returnval;
     }
 }

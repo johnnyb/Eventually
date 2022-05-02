@@ -20,7 +20,7 @@ public:
 private:
     unsigned long startMillis;
     bool multiFire = false;
-    int numFires = 0;
+    bool hasExecuted = false;
 };
 
 #endif
