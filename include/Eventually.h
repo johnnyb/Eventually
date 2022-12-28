@@ -1,6 +1,6 @@
 /*
  * This program is copyright 2016 by Jonathan Bartlett.  See LICENSING
- * file for information on usage (MIT License).  
+ * file for information on usage (MIT License).
  * Be sure to check out my books at www.bplearning.net!
  */
 
@@ -16,9 +16,11 @@
 #include "EvtTimeListener.h"
 #include "EvtByteListener.h"
 #include "EvtManager.h"
-#include "StateMachineListener.h"
 
 #define USE_EVENTUALLY_LOOP(mgr) \
-  void loop() { mgr.loopIteration(); }
+  void loop()                    \
+  {                              \
+    mgr.loopIteration();         \
+  }
 
 #endif
