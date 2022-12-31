@@ -2,13 +2,11 @@
   "name": "Eventually",
   "keywords": "async, event-based",
   "description": "Event-based programming library for Arduino",
-  "repository":
-  {
+  "repository": {
     "type": "git",
     "url": "https://github.com/johnnyb/Eventually.git"
   },
-  "authors":
-  [
+  "authors": [
     {
       "name": "Jonathan Bartlett",
       "url": "https://github.com/johnnyb",
