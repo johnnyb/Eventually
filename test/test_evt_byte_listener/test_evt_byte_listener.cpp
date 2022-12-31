@@ -22,6 +22,8 @@ void setUp(void)
     value = 10;
 }
 
+void tearDown(void) {}
+
 void test_does_not_trigger_when_disabled(void)
 {
     target.disable();
