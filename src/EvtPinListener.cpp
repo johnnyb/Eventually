@@ -4,30 +4,30 @@ EvtPinListener::EvtPinListener()
 {
 }
 
-EvtPinListener::EvtPinListener(int pin, int debounce, bool targetValue, EvtAction action)
+EvtPinListener::EvtPinListener(byte pin, int debounce, bool targetValue, EvtAction action)
 {
-  this->pin = pin;
-  this->debounce = debounce;
-  this->targetValue = targetValue;
-  this->triggerAction = action;
+  _pin = pin;
+  _debounce = debounce;
+  _targetValue = targetValue;
+  _triggerAction = action;
 }
 
-EvtPinListener::EvtPinListener(int pin, int debounce, EvtAction action)
+EvtPinListener::EvtPinListener(byte pin, int debounce, EvtAction action)
 {
-  this->pin = pin;
-  this->debounce = debounce;
-  this->triggerAction = action;
+  _pin = pin;
+  _debounce = debounce;
+  _triggerAction = action;
 }
 
-EvtPinListener::EvtPinListener(int pin, EvtAction action)
+EvtPinListener::EvtPinListener(byte pin, EvtAction action)
 {
-  this->pin = pin;
-  this->triggerAction = action;
+  _pin = pin;
+  _triggerAction = action;
 }
 
-void EvtPinListener::setupListener()
+void EvtPinListener::reset()
 {
-  startState = digitalRead(pin);
+  _startState = digitalRead(_pin);
 }
 
 bool EvtPinListener::isEventTriggered()
@@ -37,21 +37,21 @@ bool EvtPinListener::isEventTriggered()
     return false;
   }
 
-  bool val = digitalRead(pin);
+  bool val = digitalRead(_pin);
 
   // Debounce check if we were triggered earlier
-  if (firstNoticed)
+  if (_firstNoticed)
   {
     unsigned long curMillis = millis();
-    if (curMillis > firstNoticed + debounce)
+    if (curMillis > _firstNoticed + _debounce)
     {
       // Debounce time expired, check again
 
       // Reset Watcher
-      firstNoticed = 0;
+      _firstNoticed = 0;
 
       // Check
-      if (val == targetValue)
+      if (val == _targetValue)
       {
         return true;
       }
@@ -67,17 +67,17 @@ bool EvtPinListener::isEventTriggered()
     }
   }
 
-  if (mustStartOpposite && (startState == targetValue))
+  if (_mustStartOpposite && (_startState == _targetValue))
   {
     /* This is a waiting loop to wait for the pin to change to the opposite state before sensing */
     /* Q - do I need to debounce mustStartOpposite? */
-    if (val == startState)
+    if (val == _startState)
     {
       // Do nothing
     }
     else
     {
-      startState = val;
+      _startState = val;
     }
 
     return false;
@@ -85,15 +85,15 @@ bool EvtPinListener::isEventTriggered()
   else
   {
     /* This is the real deal */
-    if (val == targetValue)
+    if (val == _targetValue)
     {
-      if (debounce == 0)
+      if (_debounce == 0)
       {
         return true;
       }
       else
       {
-        firstNoticed = millis();
+        _firstNoticed = millis();
         return false;
       }
     }

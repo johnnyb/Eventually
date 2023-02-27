@@ -4,16 +4,21 @@ EvtContext::EvtContext()
 {
 }
 
+void EvtContext::manageListeners(bool manage)
+{
+    _managesListeners = manage;
+}
+
 void EvtContext::loopIteration()
 {
-    for (int i = 0; i < listenerCount; i++)
+    for (byte i = 0; i < _listenerCount; i++)
     {
-        if (listeners[i])
-        { // Make sure it isn't deleted
-            if (listeners[i]->isEventTriggered())
-            { // If we are triggered, run the action
-                if (listeners[i]->performTriggerAction(this))
-                { // If the action returns true, stop the chain
+        if (_listeners[i])
+        {
+            if (_listeners[i]->isEventTriggered())
+            {
+                if (_listeners[i]->performTriggerAction(this))
+                {
                     return;
                 }
             }
@@ -21,53 +26,71 @@ void EvtContext::loopIteration()
     }
 }
 
-void EvtContext::setupContext()
+void EvtContext::reset()
 {
-    if (data)
+    for (byte i = 0; i < _listenerCount; i++)
     {
-        delete data;
-    }
-    if (listeners)
-    {
-        for (int i = 0; i < listenerCount; i++)
+        if (_listeners[i])
         {
-            if (listeners[i])
+            if (_managesListeners)
             {
-                delete listeners[i];
+                delete _listeners[i];
             }
+            _listeners[i] = 0;
         }
-        delete listeners;
     }
 
-    listeners = new EvtListener *[EVENTUALLY_MAX_LISTENERS];
-    listenerCount = 0;
+    _listenerCount = 0;
 }
 
-void EvtContext::addListener(EvtListener *lstn)
+void EvtContext::addListener(IEvtListener *lstn)
 {
-    for (int i = 0; i < listenerCount; i++)
-    { // Try to add in empty slot
-        if (listeners[listenerCount] == 0)
+    for (byte i = 0; i < _listenerCount; i++)
+    {
+        if (_listeners[i] == 0)
         {
-            listeners[listenerCount] = lstn;
+            lstn->reset();
+            _listeners[i] = lstn;
             return;
         }
     }
 
-    // No empty slot, just add it
-    listeners[listenerCount] = lstn;
-    lstn->setupListener();
-    listenerCount++;
+    lstn->reset();
+    _listeners[_listenerCount] = lstn;
+    _listenerCount++;
 }
 
-void EvtContext::removeListener(EvtListener *lstn)
+void EvtContext::removeListener(IEvtListener *lstn)
 {
-    for (int i = 0; i < listenerCount; i++)
+    for (byte i = 0; i < _listenerCount; i++)
     {
-        if (listeners[i] == lstn)
+        if (_listeners[i] == lstn)
         {
-            delete lstn;
-            listeners[i] = 0;
+            if (_managesListeners)
+            {
+                delete lstn;
+            }
+            _listeners[i] = 0;
+
+            if (i == _listenerCount - 1)
+            {
+                _listenerCount--;
+            }
         }
     }
+}
+
+byte EvtContext::listenerCount()
+{
+    byte listenerCount = 0;
+    
+    for (byte i = 0; i < _listenerCount; i++)
+    {
+        if (_listeners[i])
+        {
+            listenerCount++;
+        }
+    }
+
+    return listenerCount;
 }

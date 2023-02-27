@@ -1,15 +1,20 @@
 {
-  "name": "Eventually",
+  "name": "Eventually2",
   "keywords": "async, event-based",
   "description": "Event-based programming library for Arduino",
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnnyb/Eventually.git"
+    "url": "https://github.com/matthewturner/Eventually.git"
   },
   "authors": [
     {
       "name": "Jonathan Bartlett",
       "url": "https://github.com/johnnyb",
+      "maintainer": false
+    },
+    {
+      "name": "Matt Turner",
+      "url": "https://github.com/matthewturner",
       "maintainer": true
     }
   ],

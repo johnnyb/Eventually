@@ -4,24 +4,22 @@
  * Be sure to check out my books at www.bplearning.net!
  */
 
-#ifndef EvtContext_h
-#define EvtContext_h
-
-#ifndef EVENTUALLY_MAX_CONTEXTS
-#define EVENTUALLY_MAX_CONTEXTS 1
-#endif
-#ifndef EVENTUALLY_MAX_LISTENERS
-#define EVENTUALLY_MAX_LISTENERS 5
-#endif
+#ifndef EvtContextManager_h
+#define EvtContextManager_h
 
 #include "Common.h"
-#include "IEvtListener.h"
-#include "IEvtContext.h"
+#include "EvtContext.h"
+#include "EvtListener.h"
 
-class EvtContext : public IEvtContext
+class EvtContextManager : public IEvtContext
 {
 public:
-  EvtContext();
+  EvtContextManager();
+  void pushContext(IEvtContext *context);
+  void resetContext();
+  IEvtContext *popContext();
+  IEvtContext *currentContext();
+
   virtual void reset() override;
   virtual void loopIteration() override;
   virtual void addListener(IEvtListener *lstn) override;
@@ -30,9 +28,9 @@ public:
   virtual byte listenerCount() override;
 
 private:
-  IEvtListener *_listeners[EVENTUALLY_MAX_LISTENERS];
-  byte _listenerCount = 0;
-  bool _managesListeners = true;
+  IEvtContext *_contextStack[EVENTUALLY_MAX_CONTEXTS];
+  byte _contextOffset = 0;
+  EvtContext _defaultContext;
 };
 
 #endif

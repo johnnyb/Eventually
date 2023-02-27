@@ -11,22 +11,22 @@
 #include <limits.h>
 
 #include "EvtListener.h"
-#include "EvtContext.h"
+#include "IEvtContext.h"
 
 class EvtTimeListener : public EvtListener
 {
 public:
     EvtTimeListener();
     EvtTimeListener(unsigned long time, bool multiFire, EvtAction trigger);
-    unsigned long millis;
-    void setupListener();
+    void reset();
     bool isEventTriggered();
-    bool performTriggerAction(EvtContext *);
+    bool performTriggerAction(IEvtContext *);
 
 private:
-    unsigned long startMillis;
-    bool multiFire = false;
-    bool hasExecuted = false;
+    unsigned long _millis;
+    unsigned long _startMillis;
+    bool _multiFire = false;
+    bool _hasExecuted = false;
 };
 
 #endif

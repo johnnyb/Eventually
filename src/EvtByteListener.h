@@ -1,15 +1,16 @@
 #ifndef EvtByteListener_h
 #define EvtByteListener_h
 
-#include <Arduino.h>
+#include "Common.h"
 #include "EvtListener.h"
 
 class EvtByteListener : public EvtListener
 {
 public:
     EvtByteListener(volatile byte *variable, byte targetValue, EvtAction action);
-    void setupListener();
+    void reset();
     bool isEventTriggered();
+    ~EvtByteListener();
 
 private:
     volatile byte *_variable;

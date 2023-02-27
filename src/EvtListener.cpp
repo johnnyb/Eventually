@@ -1,26 +1,30 @@
 #include "EvtListener.h"
 
-void EvtListener::setupListener()
+void EvtListener::reset()
 {
 }
 
 bool EvtListener::isEventTriggered()
 {
-  return enabled;
+  return _enabled;
 }
 
-bool EvtListener::performTriggerAction(EvtContext *ctx)
+bool EvtListener::performTriggerAction(IEvtContext *ctx)
 {
-  return (*triggerAction)(this, ctx);
+  return (*_triggerAction)(this, ctx);
 }
 
 void EvtListener::disable()
 {
-  this->enabled = false;
+  _enabled = false;
 }
-  
+
 void EvtListener::enable()
 {
-  this->enabled = true;
-  this->setupListener();
+  _enabled = true;
+  reset();
+}
+
+EvtListener::~EvtListener()
+{
 }

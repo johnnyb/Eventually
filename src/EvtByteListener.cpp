@@ -4,10 +4,10 @@ EvtByteListener::EvtByteListener(volatile byte *variable, byte targetValue, EvtA
 {
     _variable = variable;
     _targetValue = targetValue;
-    triggerAction = action;
+    _triggerAction = action;
 }
 
-void EvtByteListener::setupListener()
+void EvtByteListener::reset()
 {
 }
 
@@ -15,16 +15,17 @@ bool EvtByteListener::isEventTriggered()
 {
     if (!EvtListener::isEventTriggered())
     {
-        // Serial.print("NotEnabled");
         return false;
     }
 
     if (*_variable != _targetValue)
     {
-        // Serial.print("NotTarget");
-        // Serial.print(*_variable);
         return false;
     }
 
     return true;
+}
+
+EvtByteListener::~EvtByteListener()
+{
 }

@@ -7,9 +7,9 @@
 #ifndef EvtAction_h
 #define EvtAction_h
 
-class EvtContext;
-class EvtListener;
+class IEvtContext;
+class IEvtListener;
 
-typedef bool (*EvtAction)(EvtListener *, EvtContext *);
+typedef bool (*EvtAction)(IEvtListener *, IEvtContext *);
 
 #endif

@@ -8,24 +8,24 @@
 #define EvtListener_h
 
 #include "EvtAction.h"
+#include "IEvtListener.h"
 
-class EvtContext;
+class IEvtContext;
 
-class EvtListener
+class EvtListener : public IEvtListener
 {
 public:
-    void *extraData = 0; // Anything you want to store here
-    EvtAction triggerAction;
-    bool enabled = true;
+    virtual void reset() override;
+    virtual bool isEventTriggered() override;
+    virtual bool performTriggerAction(IEvtContext *) override;
 
-    virtual void setupListener();
-    virtual bool isEventTriggered();
-    virtual bool performTriggerAction(EvtContext *); // return false if I should stop the current chain
-
-    virtual void disable();
-    virtual void enable();
+    virtual void disable() override;
+    virtual void enable() override;
+    virtual ~EvtListener() override;
 
 protected:
+    EvtAction _triggerAction;
+    bool _enabled = true;
 };
 
 #endif

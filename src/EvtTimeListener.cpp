@@ -4,17 +4,17 @@ EvtTimeListener::EvtTimeListener()
 {
 }
 
-EvtTimeListener::EvtTimeListener(unsigned long time, bool multiFire, EvtAction t)
+EvtTimeListener::EvtTimeListener(unsigned long time, bool multiFire, EvtAction triggerAction)
 {
-    this->millis = time;
-    this->triggerAction = t;
-    this->multiFire = multiFire;
+    _millis = time;
+    _triggerAction = triggerAction;
+    _multiFire = multiFire;
 }
 
-void EvtTimeListener::setupListener()
+void EvtTimeListener::reset()
 {
-    startMillis = ::millis();
-    hasExecuted = false;
+    _startMillis = ::millis();
+    _hasExecuted = false;
 }
 
 bool EvtTimeListener::isEventTriggered()
@@ -24,17 +24,17 @@ bool EvtTimeListener::isEventTriggered()
         return false;
     }
 
-    if (!multiFire && hasExecuted)
+    if (!_multiFire && _hasExecuted)
     {
         return false;
     }
 
     unsigned long curTime = ::millis();
     bool shouldFire = false;
-    if (curTime >= startMillis)
+    if (curTime >= _startMillis)
     {
         /* Normal */
-        if (curTime - startMillis > this->millis)
+        if (curTime - _startMillis > _millis)
         {
             shouldFire = true;
         }
@@ -42,7 +42,7 @@ bool EvtTimeListener::isEventTriggered()
     else
     {
         /* Wrap-Around! */
-        if (((ULONG_MAX - startMillis) + curTime) > this->millis)
+        if (((ULONG_MAX - _startMillis) + curTime) > _millis)
         {
             shouldFire = true;
         }
@@ -51,19 +51,19 @@ bool EvtTimeListener::isEventTriggered()
     return shouldFire;
 }
 
-bool EvtTimeListener::performTriggerAction(EvtContext *c)
+bool EvtTimeListener::performTriggerAction(IEvtContext *c)
 {
-    bool returnval = (*triggerAction)(this, c);
-    if (multiFire)
+    bool returnval = (*_triggerAction)(this, c);
+    if (_multiFire)
     {
         // On multifire, setup to receive the event again
-        setupListener();
+        reset();
         // On multifire, we shouldn't stop the event chain no matter what, since we are just restarting in this context
         return false;
     }
     else
     {
-        hasExecuted = true;
+        _hasExecuted = true;
         return returnval;
     }
 }
