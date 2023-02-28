@@ -24,7 +24,7 @@ To use Eventually, you need to download the library and then include it in your 
 Next, you need to include a global variable for the event manager. eg `mgr`:
 
 ```c++
-EvtManager mgr;
+EvtManager mgr(true); // true to manage memory
 ```
 
 Eventually works seamlessly with other code in your sketches. Call the `mgr.loopIteration();` on each loop:
@@ -77,7 +77,7 @@ Now, when the button is pushed, we need startBlinking to install a new time-base
 ```c++
 bool startBlinking()
 {
-  mgr.resetContext(); 
+  mgr.resetContext();
   mgr.addListener(new EvtTimeListener(500, true, (EvtAction)blinkPin));
   mgr.addListener(new EvtPinListener(BUTTON_PIN, (EvtAction)stopBlinking));
   return true;
@@ -128,10 +128,11 @@ While the above approach works, it may:
 1. lead to heap fragmentation and you may run out of memory
 2. prevent Arduino/PlatformIO from estimating memory usage
 
-Instead, consider enabling/disabling listeners:
+Instead, consider declaring the listeners as global variables and/or enabling/disabling listeners:
 
 ```c++
 EvtManager mgr;
+EvtTimeListener blinkListener(500, true, (EvtAction)blinkPin);
 EvtPinListener startBlinkListener(BUTTON_PIN, (EvtAction)startBlinking);
 EvtPinListener stopBlinkListener(BUTTON_PIN, (EvtAction)stopBlinking);
 
@@ -140,21 +141,20 @@ void setup()
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
   mgr.addListener(&startBlinkListener);
-  mgr.addListener(&stopBlinkListener);
-  
-  stopBlinkListener.disable();
 }
 
 bool startBlinking()
 {
-  startBlinkListener.disable();
-  stopBlinkListener.enable();
+  mgr.reset();
+  mgr.addListener(&stopBlinkListener);
+  mgr.addListener(&blinkListener);
   return true;
 }
 
 bool stopBlinking()
 {
-  stopBlinkListener.disable();
+  mgr.reset();
+  mgr.addListener(&startBlinkListener);
   return true;
 }
 
@@ -214,6 +214,7 @@ bool EvtAlwaysFiresListener::isEventTriggered()
 
 Some of the capabilities were not being used and have been removed to conserve memory. Some other benefits over the original:
 
+* Defaults to not managing memory (breaking change!)
 * Reduced memory consumption with simplified EvtManager
 * Control the number of listeners (default: 10) and contexts (default: 1)
 * Bug fixes

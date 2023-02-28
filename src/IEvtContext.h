@@ -7,7 +7,7 @@
 class IEvtContext
 {
 public:
-  IEvtContext();
+  IEvtContext(bool manageListeners = false);
 
   /// @brief Resets the context to its initial state, removing all listeners.
   /// Potentially introduces fragmentation of the heap so use sparingly.

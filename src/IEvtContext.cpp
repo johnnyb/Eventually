@@ -1,5 +1,5 @@
 #include "IEvtContext.h"
 
-IEvtContext::IEvtContext()
+IEvtContext::IEvtContext(bool manageListeners)
 {
 }
