@@ -21,7 +21,7 @@
 class EvtContext : public IEvtContext
 {
 public:
-  EvtContext();
+  EvtContext(bool manageListeners = false);
   virtual void reset() override;
   virtual void loopIteration() override;
   virtual void addListener(IEvtListener *lstn) override;
@@ -32,7 +32,7 @@ public:
 private:
   IEvtListener *_listeners[EVENTUALLY_MAX_LISTENERS];
   byte _listenerCount = 0;
-  bool _managesListeners = true;
+  bool _manageListeners = true;
 };
 
 #endif

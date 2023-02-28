@@ -11,7 +11,7 @@
 class EvtManager : public EvtContext
 {
 public:
-  EvtManager();
+  EvtManager(bool manageListeners = false);
 };
 
 #endif

@@ -1,12 +1,13 @@
 #include "EvtContext.h"
 
-EvtContext::EvtContext()
+EvtContext::EvtContext(bool manageListeners)
 {
+    _manageListeners = manageListeners;
 }
 
 void EvtContext::manageListeners(bool manage)
 {
-    _managesListeners = manage;
+    _manageListeners = manage;
 }
 
 void EvtContext::loopIteration()
@@ -32,7 +33,7 @@ void EvtContext::reset()
     {
         if (_listeners[i])
         {
-            if (_managesListeners)
+            if (_manageListeners)
             {
                 delete _listeners[i];
             }
@@ -66,7 +67,7 @@ void EvtContext::removeListener(IEvtListener *lstn)
     {
         if (_listeners[i] == lstn)
         {
-            if (_managesListeners)
+            if (_manageListeners)
             {
                 delete lstn;
             }

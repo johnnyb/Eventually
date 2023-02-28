@@ -12,7 +12,6 @@ Mock<IEvtListener> nonBlockingListenerMock;
 
 void setUp(void)
 {
-    target.manageListeners(false);
     When(Method(listenerMock, reset)).AlwaysReturn();
     When(Method(listenerMock, isEventTriggered)).AlwaysReturn(true);
     When(Method(listenerMock, performTriggerAction)).AlwaysReturn(true);

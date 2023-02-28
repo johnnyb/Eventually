@@ -1,5 +1,5 @@
 #include "EvtManager.h"
 
-EvtManager::EvtManager()
+EvtManager::EvtManager(bool manageListeners)
 {
 }
