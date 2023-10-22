@@ -50,6 +50,17 @@ void test_triggers_after_time_delay(void)
     TEST_ASSERT_TRUE(target.isEventTriggered());
 }
 
+void test_triggers_after_updated_time_delay(void)
+{
+    When(Method(ArduinoFake(), digitalRead)).AlwaysReturn(HIGH);
+
+    When(Method(ArduinoFake(), millis)).AlwaysReturn(210);
+
+    target.setInterval(199);
+
+    TEST_ASSERT_TRUE(target.isEventTriggered());
+}
+
 void test_triggers_after_wrap_around(void)
 {
     When(Method(ArduinoFake(), digitalRead)).AlwaysReturn(HIGH);
@@ -92,6 +103,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_does_not_trigger_when_disabled);
     RUN_TEST(test_does_not_trigger_before_time_delay);
     RUN_TEST(test_triggers_after_time_delay);
+    RUN_TEST(test_triggers_after_updated_time_delay);
     RUN_TEST(test_triggers_after_wrap_around);
     RUN_TEST(test_multifire_always_returns_false);
     RUN_TEST(test_multifire_resets_delay_check);

@@ -4,9 +4,9 @@ EvtTimeListener::EvtTimeListener()
 {
 }
 
-EvtTimeListener::EvtTimeListener(unsigned long time, bool multiFire, EvtAction triggerAction)
+EvtTimeListener::EvtTimeListener(unsigned long interval, bool multiFire, EvtAction triggerAction)
 {
-    _millis = time;
+    _interval = interval;
     _triggerAction = triggerAction;
     _multiFire = multiFire;
 }
@@ -34,7 +34,7 @@ bool EvtTimeListener::isEventTriggered()
     if (curTime >= _startMillis)
     {
         /* Normal */
-        if (curTime - _startMillis > _millis)
+        if (curTime - _startMillis > _interval)
         {
             shouldFire = true;
         }
@@ -42,7 +42,7 @@ bool EvtTimeListener::isEventTriggered()
     else
     {
         /* Wrap-Around! */
-        if (((ULONG_MAX - _startMillis) + curTime) > _millis)
+        if (((ULONG_MAX - _startMillis) + curTime) > _interval)
         {
             shouldFire = true;
         }
@@ -53,7 +53,7 @@ bool EvtTimeListener::isEventTriggered()
 
 bool EvtTimeListener::performTriggerAction(IEvtContext *c)
 {
-    bool returnval = (*_triggerAction)(this, c);
+    bool returnVal = (*_triggerAction)(this, c);
     if (_multiFire)
     {
         // On multifire, setup to receive the event again
@@ -64,6 +64,11 @@ bool EvtTimeListener::performTriggerAction(IEvtContext *c)
     else
     {
         _hasExecuted = true;
-        return returnval;
+        return returnVal;
     }
+}
+
+void EvtTimeListener::setInterval(unsigned long interval)
+{
+    _interval = interval;
 }

@@ -17,13 +17,14 @@ class EvtTimeListener : public EvtListener
 {
 public:
     EvtTimeListener();
-    EvtTimeListener(unsigned long time, bool multiFire, EvtAction trigger);
+    EvtTimeListener(unsigned long interval, bool multiFire, EvtAction trigger);
     void reset();
     bool isEventTriggered();
     bool performTriggerAction(IEvtContext *);
+    void setInterval(unsigned long interval);
 
 private:
-    unsigned long _millis;
+    unsigned long _interval;
     unsigned long _startMillis;
     bool _multiFire = false;
     bool _hasExecuted = false;
