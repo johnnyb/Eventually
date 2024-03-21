@@ -79,17 +79,22 @@ void EvtContext::setupContext() {
 }
   
 void EvtContext::addListener(EvtListener *lstn) {
-  for(int i = 0; i < listenerCount; i++) { // Try to add in empty slot
-    if(listeners[listenerCount] == 0) { 
-      listeners[listenerCount] = lstn;
-      return;
+  int i = 0;
+
+  // find the first empty slot
+  for(; i < listenerCount; i++) {
+    if(listeners[i] == 0) {
+      break;
     }
   }
 
-  // No empty slot, just add it
-  listeners[listenerCount] = lstn;
+  // if we didn't find one, expand
+  if(i == listenerCount) {
+    listenerCount++;
+  }
+  
+  listeners[i] = lstn;
   lstn->setupListener();
-  listenerCount++;
 }
 
 void EvtContext::removeListener(EvtListener *lstn) {
